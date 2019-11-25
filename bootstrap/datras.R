@@ -23,10 +23,8 @@ toget$Start.year <- c(tab)
 toget <- toget[!is.na(toget$Start.year),]
 row.names(toget) <- NULL
 
-# datras_fname utility:
-datras.fname <- function(what, survey, year, quarter) {
-  paste0(what, "_", survey, "_", year, "_", quarter, ".csv")
-}
+# datras_fname utility from repo root:
+source("../../utilities.R")
 
 # loop over surveys and download (NOTE final year fixed at 2018)
 for (i in seq_len(nrow(toget))) {
@@ -47,21 +45,21 @@ for (i in seq_len(nrow(toget))) {
 
       message("---- downloading HH ----")
       hh <- getDATRAS(record = "HH", survey = survey, year = year, quarter = quarter)
-      if (!is.null(hh)) write.taf(hh, file = fname("hh"))
+      if (!is.null(hh) && !identical(hh, FALSE)) write.taf(hh, file = fname("hh"))
       rm(hh); gc()
     }
 
     if (!file.exists(fname("hl"))) {
       message("---- downloading HL ----")
       hl <- getDATRAS(record = "HL", survey = survey, year = year, quarter = quarter)
-      if (!is.null(hl)) write.taf(hl, file = fname("hl"))
+      if (!is.null(hl) && !identical(hl, FALSE)) write.taf(hl, file = fname("hl"))
       rm(hl); gc()
     }
 
     if (!file.exists(fname("ca"))) {
       message("---- downloading CA ----")
       ca <- getDATRAS(record = "CA", survey = survey, year = year, quarter = quarter)
-      if (!is.null(ca)) write.taf(ca, file = fname("ca"))
+      if (!is.null(ca) && !identical(ca, FALSE)) write.taf(ca, file = fname("ca"))
       rm(ca); gc()
     }
   }
