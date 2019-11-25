@@ -14,14 +14,14 @@ qtr <- strsplit(tab$Quarter, ",")
 syr <- strsplit(tab$Start.year, ",")
 orig.row <- rep(1:nrow(tab), sapply(qtr, length))
 
-tab <- cbind(tab[orig.row,c("Division", "Survey.name", "Gear")],
+control_file <- cbind(tab[orig.row,c("Division", "Survey.name", "Gear")],
              data.frame(Quarter = as.integer(unlist(qtr)),
                         Start.year = as.integer(unlist(syr))))
 
-tab$Survey.name <- trimws(tab$Survey.name)
-tab$Gear <- trimws(tab$Gear)
-tab$Division <- trimws(tab$Division)
+control_file$Survey.name <- trimws(control_file$Survey.name)
+control_file$Gear <- trimws(control_file$Gear)
+control_file$Division <- trimws(control_file$Division)
 
-row.names(tab) <- NULL
+row.names(control_file) <- NULL
 
-write.taf(control_file)
+write.taf(control_file, quote = TRUE)
