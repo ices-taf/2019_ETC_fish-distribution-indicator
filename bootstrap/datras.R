@@ -24,7 +24,7 @@ toget <- toget[!is.na(toget$Start.year),]
 row.names(toget) <- NULL
 
 # datras_fname utility from repo root:
-source("../../utilities.R")
+source("../../../utilities.R")
 
 # loop over surveys and download (NOTE final year fixed at 2018)
 for (i in seq_len(nrow(toget))) {
