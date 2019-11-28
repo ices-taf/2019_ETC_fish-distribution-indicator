@@ -10,14 +10,20 @@ library(tidyverse)
 # read control file
 ctrl <- read.taf("bootstrap/data/control_file/control_file.csv")
 
-
 # read in ICES areas shapes
 areas <- sf::read_sf("bootstrap/data/ICES-areas/ICES_Areas_20160601_cut_dense_3857.shp")
-areas <- sf::st_transform(areas, crs(b))
 
 # subset to areas of interest
 areas$subarea.div <- paste(areas$SubArea, areas$Division, sep = ".")
 areas <- areas[which(areas$subarea.div %in% ctrl$Division),]
+
+# read sst nc as raster
+b <- brick("bootstrap/data/hadley-sst/HadSST.4.0.0.0_median.nc")
+
+areas <- st_transform(areas, crs(b))
+
+b <- crop(b, extent(areas), snap = "out")
+b[b > 100] <- NA
 
 # simplify anc combine
 areas <-
@@ -26,14 +32,11 @@ areas <-
   group_by(subarea.div) %>%
   summarise(geog = st_union(geometry)) %>%
   ungroup()
+
 areas <-
   areas[1:nrow(areas),] %>% # weird...
   st_simplify(FALSE, 0.2)
 
-# read sst nc as raster
-b <- brick("bootstrap/data/hadley-sst/HadSST.4.0.0.0_median.nc")
-b <- crop(b, extent(areas), snap = "out")
-b[b > 100] <- NA
 
 # filter for years of interest
 b <- b[[which(years(b@z$time) %in% 1965:2018)]]
