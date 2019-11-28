@@ -45,21 +45,21 @@ for (i in seq_len(nrow(toget))) {
 
       message("---- downloading HH ----")
       hh <- getDATRAS(record = "HH", survey = survey, year = year, quarter = quarter)
-      if (!is.null(hh) && !identical(hh, FALSE)) write.taf(hh, file = fname("hh"))
+      if (!is.null(hh) && !identical(hh, FALSE)) write.taf(hh, file = fname("hh"), quote = TRUE)
       rm(hh); gc()
     }
 
     if (!file.exists(fname("hl"))) {
       message("---- downloading HL ----")
       hl <- getDATRAS(record = "HL", survey = survey, year = year, quarter = quarter)
-      if (!is.null(hl) && !identical(hl, FALSE)) write.taf(hl, file = fname("hl"))
+      if (!is.null(hl) && !identical(hl, FALSE)) write.taf(hl, file = fname("hl"), quote = TRUE)
       rm(hl); gc()
     }
 
     if (!file.exists(fname("ca"))) {
       message("---- downloading CA ----")
       ca <- getDATRAS(record = "CA", survey = survey, year = year, quarter = quarter)
-      if (!is.null(ca) && !identical(ca, FALSE)) write.taf(ca, file = fname("ca"))
+      if (!is.null(ca) && !identical(ca, FALSE)) write.taf(ca, file = fname("ca"), quote = TRUE)
       rm(ca); gc()
     }
   }
