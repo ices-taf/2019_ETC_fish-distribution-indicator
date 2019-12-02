@@ -1,0 +1,21 @@
+---
+title: Fish distrution indicator
+output:
+  github_document:
+    html_preview: false
+---
+
+initial setup
+
+```{r setup}
+library(icesTAF)
+library(knitr)
+```
+
+## Table 1
+
+```{r table1}
+table1_survey_overview <- read.taf("report/table1_survey_overview.csv")
+
+kable(table1_survey_overview)
+```
