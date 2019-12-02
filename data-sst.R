@@ -1,4 +1,7 @@
 
+source("utilities.R")
+detachAllPackages()
+
 library(icesTAF)
 library(ncdf4)
 library(raster)
@@ -47,8 +50,8 @@ b <- stackApply(b, yrs, fun = mean)
 yrs <- as.numeric(levels(yrs))
 names(b) <- paste(yrs)
 
-image(b[["X2018"]])
-plot(areas, add = TRUE, col = "transparent")
+#image(b[["X2018"]])
+#plot(areas, add = TRUE, col = "transparent")
 
 # calculate number of cells and means
 means <- raster::extract(b, areas, mean)
@@ -60,9 +63,9 @@ sst <-
     sst = c(means)
   )
 
-head(sst)
+write.taf(sst, dir = "data")
 
-library(ggplot2)
-ggplot(sst, aes(x = year, y = sst, col = area)) +
-  geom_line()
+#library(ggplot2)
+#ggplot(sst, aes(x = year, y = sst, col = area)) +
+#  geom_line()
 
