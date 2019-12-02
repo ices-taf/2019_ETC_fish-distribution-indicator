@@ -56,11 +56,12 @@ for (i in seq_len(nrow(toget))) {
       rm(hl); gc()
     }
 
-    if (!file.exists(fname("ca"))) {
-      message("---- downloading CA ----")
-      ca <- getDATRAS(record = "CA", survey = survey, year = year, quarter = quarter)
-      if (!is.null(ca) && !identical(ca, FALSE)) write.taf(ca, file = fname("ca"), quote = TRUE)
-      rm(ca); gc()
-    }
+    # CA data not required
+    #if (!file.exists(fname("ca"))) {
+    #  message("---- downloading CA ----")
+    #  ca <- getDATRAS(record = "CA", survey = survey, year = year, quarter = quarter)
+    #  if (!is.null(ca) && !identical(ca, FALSE)) write.taf(ca, file = fname("ca"), quote = TRUE)
+    #  rm(ca); gc()
+    #}
   }
 }
