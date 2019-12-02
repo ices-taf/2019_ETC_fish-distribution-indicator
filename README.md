@@ -1,12 +1,13 @@
-Fish distrution indicator
+Fish distribution indicator
 ================
 
-initial setup
+## Figure 1
 
 ``` r
-library(icesTAF)
-library(knitr)
+include_graphics("report/Figure1_temporal_spatial.png")
 ```
+
+![](report/Figure1_temporal_spatial.png)<!-- -->
 
 ## Table 1
 

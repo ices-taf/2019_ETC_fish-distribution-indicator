@@ -1,16 +1,20 @@
 ---
-title: Fish distrution indicator
+title: Fish distribution indicator
 output:
   github_document:
     html_preview: false
 ---
 
-initial setup
-
-```{r setup}
+```{r setup, echo = FALSE}
 library(icesTAF)
 library(knitr)
 ```
+
+## Figure 1
+```{r figure 1}
+include_graphics("report/Figure1_temporal_spatial.png")
+```
+
 
 ## Table 1
 

@@ -5,8 +5,73 @@
 
 library(icesTAF)
 library(ggplot2)
+library(sf)
+library(dplyr)
 
 mkdir("report")
+
+# read in raw data
+hh_data <- read.taf("data/hh_data.csv")
+
+sampled_statrecs <- unique(hh_data$StatRec)
+
+# equal area projection
+crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+# read in statrecs
+statrecs <- sf::read_sf("bootstrap/data/ICES-stat-rec/StatRec_map_Areas_Full_20170124.shp")
+statrecs <- statrecs[statrecs$ICESNAME %in% sampled_statrecs,]
+
+# read in areas
+areas <- sf::read_sf("bootstrap/data/ICES-areas/ICES_Areas_20160601_cut_dense_3857.shp")
+areas_sub <- areas[areas$Area_27 %in% unique(statrecs$Area_27), ]
+
+# tranform projection
+areas <- sf::st_transform(areas, crs = crs)
+areas_sub <- sf::st_transform(areas_sub, crs = crs)
+statrecs <- sf::st_transform(statrecs, crs = crs)
+
+
+# -------------------------------------------------------------------
+# Figure 1. Temporal development of the Lusitanian/Boreal species
+#           ratio with 5 years interval, 1965-2018
+# -------------------------------------------------------------------
+
+# report/figure_1.png
+
+# read in
+
+# read in LB ratio by stat sq and year
+fig1_data <- read.taf("output/fig1_data.csv")
+fig1_data <-
+  st_as_sf(
+    fig1_data,
+    coords = c("Lat", "Lon"),
+    crs = 4326
+  )
+fig1_data <- sf::st_transform(fig1_data, crs = crs)
+
+fig1_data <- fig1_data %>% dplyr::filter(Year %in% seq(1965, 2020, by = 5))
+
+ggplot() +
+  #geom_sf(data = europe_shape, fill = "grey80", color = "grey90") +
+  geom_sf(
+    data = fig1_data %>% st_transform(4326) %>% mutate(lbratio = cut(ratio, c(-Inf, 1, 2, Inf))),
+    aes(fill = lbratio, col = lbratio),
+    size = 1
+  ) +
+  facet_wrap(~ Year) +
+  scale_fill_manual(
+    name = "Lusitanian/Boreal species",
+    values = c(rgb(141, 180, 226, maxColorValue = 255), rgb(255, 255, 133, maxColorValue = 255), rgb(255, 51, 0, maxColorValue = 255)),
+    labels = c("Boreal dominance", "Lusitanian dominance", "High Lusitanian dominance"),
+    aesthetics = c("fill", "colour"),
+     guide = guide_legend(reverse = TRUE)
+  )
+
+ggplot2::ggsave("Figure1_temporal_spatial.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
+
+
 
 # -------------------------------------------------------------------
 # Table 1. survey overview
@@ -33,25 +98,8 @@ write.taf(table1_survey_overview, dir = "report", quote = TRUE)
 # illustration 1. survey overview map
 # -------------------------------------------------------------------
 
-hh_data <- read.taf("data/hh_data.csv")
 
-sampled_statrecs <- unique(hh_data$StatRec)
 
-# equal area projection
-crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-
-# read in statrecs
-statrecs <- sf::read_sf("bootstrap/data/ICES-stat-rec/StatRec_map_Areas_Full_20170124.shp")
-statrecs <- statrecs[statrecs$ICESNAME %in% sampled_statrecs,]
-
-# read in areas
-areas <- sf::read_sf("bootstrap/data/ICES-areas/ICES_Areas_20160601_cut_dense_3857.shp")
-areas_sub <- areas[areas$Area_27 %in% unique(statrecs$Area_27), ]
-
-# tranform projection
-areas <- sf::st_transform(areas, crs = crs)
-areas_sub <- sf::st_transform(areas_sub, crs = crs)
-statrecs <- sf::st_transform(statrecs, crs = crs)
 
 # make plot
 
