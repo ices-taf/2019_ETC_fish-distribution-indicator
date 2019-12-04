@@ -26,7 +26,13 @@ include_graphics("report/Figure1_temporal_ratio_map.png")
 include_graphics("report/Figure2_temporal_species_count.png")
 ```
 
+## Figure 3
 
+*Temporal development of the ratio between the number of Lusitanian and Boreal species*
+
+```{r figure_3, echo = FALSE}
+include_graphics("report/Figure3_temporal_ratio_sst.png")
+```
 
 ## Table 1
 

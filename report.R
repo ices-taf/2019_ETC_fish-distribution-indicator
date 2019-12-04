@@ -74,7 +74,7 @@ ggplot2::ggsave("Figure1_temporal_ratio_map.png", path = "report/", width = 170*
 #           biogeographical affinity group
 # -------------------------------------------------------------------
 
-# read in LB ratio by stat sq and year
+# read in counts year and affinity
 fig2_data <- read.taf("output/fig2_data.csv")
 
 fig2_data <-
@@ -97,7 +97,20 @@ ggplot(fig2_data,
 ggplot2::ggsave("Figure2_temporal_species_count.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
 
 
+# -------------------------------------------------------------------
+# Figure 3. Temporal development of the ratio between the number of
+#           Lusitanian and Boreal species
+# -------------------------------------------------------------------
 
+fig3_data <- read.taf("output/fig3_data.csv")
+
+ggplot(fig3_data) +
+  geom_line(aes(x = Year, y = ratio), col = rgb(172, 0, 62, maxColorValue = 255)) +
+  geom_line(aes(x = Year, y = sst_lag1), col = rgb(0, 44, 86, maxColorValue = 255)) +
+  facet_wrap(~ F_CODE, scales = "free") +
+  theme_minimal()
+
+ggplot2::ggsave("Figure3_temporal_ratio_sst.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
 
 
 # -------------------------------------------------------------------

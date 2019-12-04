@@ -15,6 +15,13 @@ affinity group*
 
 ![](report/Figure2_temporal_species_count.png)<!-- -->
 
+## Figure 3
+
+*Temporal development of the ratio between the number of Lusitanian and
+Boreal species*
+
+![](report/Figure3_temporal_ratio_sst.png)<!-- -->
+
 ## Table 1
 
 | Division | Survey.name | Gear | Quarter | Start.year |
