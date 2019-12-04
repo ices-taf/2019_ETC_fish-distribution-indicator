@@ -37,10 +37,6 @@ statrecs <- sf::st_transform(statrecs, crs = crs)
 #           ratio with 5 years interval, 1965-2018
 # -------------------------------------------------------------------
 
-# report/figure_1.png
-
-# read in
-
 # read in LB ratio by stat sq and year
 fig1_data <- read.taf("output/fig1_data.csv")
 fig1_data <-
@@ -69,7 +65,38 @@ ggplot() +
      guide = guide_legend(reverse = TRUE)
   )
 
-ggplot2::ggsave("Figure1_temporal_spatial.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
+ggplot2::ggsave("Figure1_temporal_ratio_map.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
+
+
+
+# -------------------------------------------------------------------
+# Figure 2. Temporal development in the number of species of each
+#           biogeographical affinity group
+# -------------------------------------------------------------------
+
+# read in LB ratio by stat sq and year
+fig2_data <- read.taf("output/fig2_data.csv")
+
+fig2_data <-
+  tidyr::pivot_longer(
+    fig2_data,
+    cols = Atlantic:Unknown,
+    names_to = "affinity",
+    values_to = "count"
+  ) %>%
+  mutate(
+    count = ifelse(is.na(count), 0, count)
+  )
+
+ggplot(fig2_data,
+  aes(x = Year, y = count, col = factor(affinity))) +
+  geom_line() +
+  facet_wrap(~ F_CODE, scales = "free") +
+  theme_minimal()
+
+ggplot2::ggsave("Figure2_temporal_species_count.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)
+
+
 
 
 

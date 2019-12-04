@@ -3,11 +3,27 @@ Fish distribution indicator
 
 ## Figure 1
 
+## Temporal development of the Lusitanian/Boreal species ratio with
+
+## 5 years interval, 1965-2016
+
 ``` r
-include_graphics("report/Figure1_temporal_spatial.png")
+include_graphics("report/Figure1_temporal_ratio_map.png")
 ```
 
-![](report/Figure1_temporal_spatial.png)<!-- -->
+![](report/Figure1_temporal_ratio_map.png)<!-- -->
+
+## Figure 2
+
+## Temporal development in the number of species of each
+
+## biogeographical affinity group
+
+``` r
+include_graphics("report/Figure2_temporal_species_count.png")
+```
+
+![](report/Figure2_temporal_species_count.png)<!-- -->
 
 ## Table 1
 
