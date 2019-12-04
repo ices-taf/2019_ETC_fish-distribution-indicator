@@ -7,10 +7,6 @@ Fish distribution indicator
 
 ## 5 years interval, 1965-2016
 
-``` r
-include_graphics("report/Figure1_temporal_ratio_map.png")
-```
-
 ![](report/Figure1_temporal_ratio_map.png)<!-- -->
 
 ## Figure 2
@@ -19,21 +15,11 @@ include_graphics("report/Figure1_temporal_ratio_map.png")
 
 ## biogeographical affinity group
 
-``` r
-include_graphics("report/Figure2_temporal_species_count.png")
-```
-
 ![](report/Figure2_temporal_species_count.png)<!-- -->
 
 ## Table 1
 
-``` r
-table1_survey_overview <- read.taf("report/table1_survey_overview.csv")
-
-kable(table1_survey_overview)
-```
-
-| Division | Survey name | Gear | Quarter | Start year |
+| Division | Survey.name | Gear | Quarter | Start.year |
 | :------- | :---------- | :--- | :------ | :--------- |
 | 3.a      | NS-IBTS     | GOV  | 1, 3    | 1979, 1991 |
 | 3.b, c   | BITS        | TVS  | 1, 4    | 1996, 1999 |
