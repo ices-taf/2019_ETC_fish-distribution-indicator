@@ -9,7 +9,7 @@ process_hh <-  function(hh) {
   file.path("bootstrap/data/datras", hh) %>%
     read.taf(colClasses = c(StatRec = "character")) %>%
     select(Survey, Quarter, Country, Ship, Gear, SweepLngt, GearExp, DoorType, StNo, HaulNo, Year, StatRec, DayNight) %>%
-    filter(DayNight == "D") %>%
+ #   filter(DayNight == "D") %>%
     select(-DayNight)
 }
 
@@ -36,14 +36,15 @@ process_datras <- function(hh, hl, Gear) {
     unique()
 }
 
-detachAllPackages <- function() {
-
-  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
-
-  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
-
-  package.list <- setdiff(package.list,basic.packages)
-
-  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
-
+detachAllPackages <- function(keep = NULL) {
+  basic.packages <-
+    paste0("package:",
+           c("stats", "graphics", "grDevices", "utils",
+             "datasets", "methods", "base", keep))
+  package.list <- grep("package:", search(), value = TRUE)
+  # will only work if there are no dependent packages
+  # could force by looping until all packages detached
+  for (package in setdiff(package.list, basic.packages))
+    detach(package, character.only = TRUE)
 }
+
