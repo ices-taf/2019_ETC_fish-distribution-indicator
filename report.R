@@ -11,16 +11,19 @@ library(dplyr)
 mkdir("report")
 
 # read in raw data
-hh_data <- read.taf("data/hh_data.csv")
+fig1_data <- read.taf("output/fig1_data.csv")
+fig1_data <- sf::st_as_sf(fig1_data, wkt = "WKT", crs = 4326)
 
-sampled_statrecs <- unique(hh_data$StatRec)
+fig1_data %>%
+  filter(F_CODE == "27.6.b") %>%
+  as.data.frame()
+
+sampled_statrecs <- unique(fig1_data["StatRec"])
+
+plot(sampled_statrecs)
 
 # equal area projection
 crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-
-# read in statrecs
-statrecs <- sf::read_sf("bootstrap/data/ICES-stat-rec/StatRec_map_Areas_Full_20170124.shp")
-statrecs <- statrecs[statrecs$ICESNAME %in% sampled_statrecs,]
 
 # read in areas
 areas <- sf::read_sf("bootstrap/data/ICES-areas/ICES_Areas_20160601_cut_dense_3857.shp")
@@ -29,7 +32,7 @@ areas_sub <- areas[areas$Area_27 %in% unique(statrecs$Area_27), ]
 # tranform projection
 areas <- sf::st_transform(areas, crs = crs)
 areas_sub <- sf::st_transform(areas_sub, crs = crs)
-statrecs <- sf::st_transform(statrecs, crs = crs)
+sampled_statrecs <- sf::st_transform(sampled_statrecs, crs = crs)
 
 
 # -------------------------------------------------------------------
@@ -105,9 +108,13 @@ ggplot2::ggsave("Figure2_temporal_species_count.png", path = "report/", width = 
 fig3_data <- read.taf("output/fig3_data.csv")
 
 ggplot(fig3_data) +
-  geom_line(aes(x = Year, y = ratio), col = rgb(172, 0, 62, maxColorValue = 255)) +
-  geom_line(aes(x = Year, y = sst_lag1), col = rgb(0, 44, 86, maxColorValue = 255)) +
+  geom_line(aes(x = Year, y = ratio), col = rgb(0, 44, 86, maxColorValue = 255)) +
+  geom_line(aes(x = Year, y = sst_lag1), col = rgb(172, 0, 62, maxColorValue = 255)) +
   facet_wrap(~ F_CODE, scales = "free") +
+  scale_y_continuous(
+    "L/B ratio",
+    sec.axis = sec_axis(~ . * 1, name = "temperature anomaly (oC)")
+  ) +
   theme_minimal()
 
 ggplot2::ggsave("Figure3_temporal_ratio_sst.png", path = "report/", width = 170*2, height = 100.5*2, units = "mm", dpi = 600)

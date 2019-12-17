@@ -12,10 +12,9 @@ library(tidyr)
 
 mkdir("output")
 
-# read in model output
-stsq_data <- read.taf("model/stsq_data.csv")
-yy_data <- read.taf("model/yy_data.csv")
-
+# read in model results
+stsq_results <- read.taf("model/stsq_results.csv")
+annual_results <- read.taf("model/annual_results.csv")
 
 # Fig 1 requires
 
@@ -32,18 +31,30 @@ yy_data <- read.taf("model/yy_data.csv")
 # * Lon - longitude
 
 fig1_data <-
-  stsq_data %>%
+  stsq_results %>%
   mutate(
     F_CODE = paste0(27, ".", F_CODE),
   ) %>%
   select(
     StatRec, Survey, F_CODE, Quarter, Year,
-    Lusitanian, Boreal, ratio, Lat, Lon
+    Lusitanian, Boreal, ratio, Lat, Lon, WKT
   )
 
 head(fig1_data)
 
 write.taf(fig1_data, dir = "output", quote = TRUE)
+
+# convert to sf object and save as geojson file
+fig1_data_sf <- sf::st_as_sf(fig1_data, wkt = "WKT", crs = 4326)
+fig1_data_sf <- sf::st_centroid(fig1_data_sf)
+fig1_data_sf$Year <- as.Date(ISOdate(fig1_data_sf$Year, 1, 1))
+
+sf::write_sf(fig1_data_sf, "output/fig1_data_esri.shp")
+files <- dir("output", pattern = "*_esri", full = TRUE)
+if (file.exists("output/fig1_data.zip")) file.remove("output/fig1_data.zip")
+zip("output/fig1_data.zip", files, extras = "-j")
+file.remove(files)
+
 
 # Figure 2 requires
 
@@ -55,14 +66,14 @@ write.taf(fig1_data, dir = "output", quote = TRUE)
 # * Area
 
 fig2_data <-
-  yy_data %>%
+  annual_results %>%
   mutate(
     F_CODE = paste0(27, ".", F_CODE),
   ) %>%
   select(
     Year, Atlantic, Boreal, Lusitanian, Unknown, F_CODE
   ) %>%
-  arrange(F_CODE)
+  arrange(F_CODE, Year)
 
 write.taf(fig2_data, dir = "output", quote = TRUE)
 
@@ -77,24 +88,13 @@ write.taf(fig2_data, dir = "output", quote = TRUE)
 # * Area
 
 fig3_data <-
-  yy_data %>%
+  annual_results %>%
   mutate(
     F_CODE = paste0(27, ".", F_CODE),
   ) %>%
   select(
-    Year, ratio, sst, F_CODE
+    Year, ratio, sst, sst1, sst2, F_CODE
   ) %>%
-  group_by(
-    F_CODE
-  )  %>%
-  mutate(
-    sst_lag1 = c(NA, sst[-length(sst)]),
-    sst_lag2 = if (length(sst) > 2) c(NA, NA, sst[-length(sst) + 1:0]) else rep(NA, length(sst))
-  ) %>%
-  ungroup() %>%
-  arrange(F_CODE)
+  arrange(F_CODE, Year)
 
 write.taf(fig3_data, dir = "output", quote = TRUE)
-
-# previous files from JOrgen had:
-# Species Division  Year  Caught  Fished  Prop
