@@ -27,7 +27,8 @@ crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +t
 
 # read in areas
 areas <- sf::read_sf("bootstrap/data/ICES-areas/ICES_Areas_20160601_cut_dense_3857.shp")
-areas_sub <- areas[areas$Area_27 %in% unique(statrecs$Area_27), ]
+
+areas_sub <- areas[paste0("27.", gsub("([.][0-9]*)*$", "", areas$Area_27)) %in% unique(fig1_data$F_CODE), ]
 
 # tranform projection
 areas <- sf::st_transform(areas, crs = crs)
@@ -107,13 +108,22 @@ ggplot2::ggsave("Figure2_temporal_species_count.png", path = "report/", width = 
 
 fig3_data <- read.taf("output/fig3_data.csv")
 
+# scale temperature to have same mean and slope as ratio??
+fig3_data <-
+  fig3_data %>%
+    group_by(F_CODE) %>%
+    mutate(
+      sst1_scaled = (sst1 - mean(sst1)) / sd(sst1) * sd(ratio) + mean(ratio)
+    ) %>%
+    ungroup()
+
 ggplot(fig3_data) +
   geom_line(aes(x = Year, y = ratio), col = rgb(0, 44, 86, maxColorValue = 255)) +
-  geom_line(aes(x = Year, y = sst_lag1), col = rgb(172, 0, 62, maxColorValue = 255)) +
+  geom_line(aes(x = Year, y = sst1_scaled), col = rgb(172, 0, 62, maxColorValue = 255)) +
   facet_wrap(~ F_CODE, scales = "free") +
   scale_y_continuous(
-    "L/B ratio",
-    sec.axis = sec_axis(~ . * 1, name = "temperature anomaly (oC)")
+    "L/B ratio"#,
+#    sec.axis = sec_axis(~ . * 1, name = "temperature anomaly (oC)")
   ) +
   theme_minimal()
 
@@ -145,11 +155,6 @@ write.taf(table1_survey_overview, dir = "report", quote = TRUE)
 # illustration 1. survey overview map
 # -------------------------------------------------------------------
 
-
-
-
-# make plot
-
 box <- sf::st_bbox(areas_sub)
 xlims <- c(box[1], box[3])
 ylims <- c(box[2], box[4])
@@ -159,8 +164,7 @@ p <-
     geom_sf(data = areas, color = "grey90", fill = "lightblue") +
     geom_sf(data = areas_sub, color = "grey90", fill = "grey60") +
     #geom_sf(data = europe_shape, fill = "grey80", color = "grey90") +
-    #geom_sf(data = sar,
-    geom_sf(data = statrecs, color = "grey60", alpha = 0.5) +
+    geom_sf(data = sampled_statrecs, color = "grey60", alpha = 0.5) +
     theme(
       plot.caption = element_text(size = 6),
       plot.subtitle = element_text(size = 7),
@@ -168,11 +172,8 @@ p <-
       axis.title.y = element_blank()) +
     coord_sf(crs = crs, xlim = xlims, ylim = ylims) +
     theme_bw(base_size = 8) +
-    ggtitle("Overview of the ICES divisions and statistical rectangles")
+    ggtitle("Overview of the ICES divisions and statistical rectangles sampled")
 
 p
-ggplot2::ggsave("Illustration1_overview_map.png", path = "report/", width = 170, height = 100.5, units = "mm", dpi = 300)
+ggplot2::ggsave("Illustration1_sample_overview_map.png", path = "report/", width = 150, height = 150, units = "mm", dpi = 600)
 
-# -------------------------------------------------------------------
-# figure 1.
-# -------------------------------------------------------------------
